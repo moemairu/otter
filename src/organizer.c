@@ -172,7 +172,7 @@ int organize_files(const char *dir_path, const FileList *list,
 
 void print_stats(const OrganizerStats *stats, int dry_run, int verbose)
 {
-    if (verbose) {
+    if (verbose || dry_run) {
         /* Detailed summary box. */
         printf("\n");
         printf("  ──────────────────────────────────\n");
@@ -190,12 +190,12 @@ void print_stats(const OrganizerStats *stats, int dry_run, int verbose)
         printf("\n");
     } else {
         /* Clean one-liner. */
-        printf("🦦 Scanned %zu file%s, created %zu folder%s, moved %zu file%s.\n",
+        printf("\n🦦 Otter scanned %zu file%s, created %zu folder%s and moved %zu file%s.\n\n",
                stats->files_scanned, stats->files_scanned == 1 ? "" : "s",
                stats->dirs_created,  stats->dirs_created  == 1 ? "" : "s",
                stats->files_moved,   stats->files_moved   == 1 ? "" : "s");
         if (stats->files_skipped > 0) {
-            printf("   ⚠  %zu file%s skipped.\n",
+            printf("   ⚠  %zu file%s skipped.\n\n",
                    stats->files_skipped, stats->files_skipped == 1 ? "" : "s");
         }
     }

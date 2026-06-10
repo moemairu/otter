@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
         return history_undo(dir_path, verbose);
     }
 
-    /* ── Banner (verbose only) ─────────────────────────────── */
-    if (verbose) {
+    /* ── Banner (verbose or dry_run) ───────────────────────── */
+    if (verbose || dry_run) {
         printf("\n");
         printf("  🦦  Otter v%s\n", OTTER_VERSION);
         printf("  Organizing: %s\n", dir_path);

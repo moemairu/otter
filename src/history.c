@@ -179,10 +179,10 @@ int history_undo(const char *dir_path, int verbose)
         printf("  ──────────────────────────────────\n");
         printf("\n");
     } else {
-        printf("🦦 Restored %zu file%s.\n",
+        printf("\n🦦 Otter restored %zu file%s.\n\n",
                restored, restored == 1 ? "" : "s");
         if (failed > 0) {
-            printf("   ⚠  %zu file%s failed.\n",
+            printf("   ⚠  %zu file%s failed.\n\n",
                    failed, failed == 1 ? "" : "s");
         }
     }
