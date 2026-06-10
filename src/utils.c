@@ -63,7 +63,7 @@ void print_usage(const char *prog)
 {
     printf("\n");
     printf("        ╭──────────────────────────────────────╮\n");
-    printf("        │          🦦  O T T E R  v%s      │\n", OTTER_VERSION);
+    printf("        │          🦦  O T T E R  v%s       │\n", OTTER_VERSION);
     printf("        │    File Organizer for the Terminal   │\n");
     printf("        ╰──────────────────────────────────────╯\n");
     printf("\n");
