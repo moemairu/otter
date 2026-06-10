@@ -5,6 +5,7 @@
  *
  * Options:
  *   -n, --dry-run   Simulate without moving files.
+ *   -u, --undo      Undo the last organize operation.
  *   -h, --help      Show usage information.
  *   -v, --version   Show version.
  */
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
 {
     const char *dir_path = NULL;
     int         dry_run  = 0;
+    int         undo     = 0;
 
     /* ── Argument parsing ──────────────────────────────────── */
     for (int i = 1; i < argc; ++i) {
@@ -28,6 +30,10 @@ int main(int argc, char *argv[])
         }
         if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--dry-run") == 0) {
             dry_run = 1;
+            continue;
+        }
+        if (strcmp(argv[i], "-u") == 0 || strcmp(argv[i], "--undo") == 0) {
+            undo = 1;
             continue;
         }
         if (argv[i][0] == '-') {
@@ -49,6 +55,11 @@ int main(int argc, char *argv[])
         fprintf(stderr, "otter: no directory specified\n");
         print_usage(argv[0]);
         return OTTER_ERR_ARGS;
+    }
+
+    /* ── Undo mode ─────────────────────────────────────────── */
+    if (undo) {
+        return history_undo(dir_path);
     }
 
     /* ── Banner ────────────────────────────────────────────── */

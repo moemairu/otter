@@ -91,6 +91,13 @@ int organize_files(const char *dir_path, const FileList *list,
     OrganizerStats local = {0};
     local.files_scanned = list->count;
 
+    /* Open history log (only when actually moving files). */
+    HistoryLog history = {0};
+    int has_history = 0;
+    if (!dry_run) {
+        has_history = (history_open(&history, dir_path) == 0);
+    }
+
     for (size_t i = 0; i < list->count; ++i) {
         const FileEntry *fe = &list->items[i];
 
@@ -136,6 +143,11 @@ int organize_files(const char *dir_path, const FileList *list,
         if (rename(src, dst) == 0) {
             printf("  ✓  %s  →  %s/\n", fe->name, fe->extension);
             local.files_moved++;
+
+            /* Record in history for undo. */
+            if (has_history) {
+                history_record(&history, src, dst);
+            }
         } else {
             fprintf(stderr, "  ✗  %s  →  %s/ (failed: %s)\n",
                     fe->name, fe->extension, strerror(errno));
@@ -145,6 +157,10 @@ int organize_files(const char *dir_path, const FileList *list,
         free(dest_dir);
         free(src);
         free(dst);
+    }
+
+    if (has_history) {
+        history_close(&history);
     }
 
     if (stats) *stats = local;

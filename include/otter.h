@@ -33,10 +33,12 @@
 #define OTTER_ERR_STAT      3
 #define OTTER_ERR_MKDIR     4
 #define OTTER_ERR_MOVE      5
+#define OTTER_ERR_UNDO      6
 
 /* ── Module headers ────────────────────────────────────────── */
 #include "scanner.h"
 #include "organizer.h"
+#include "history.h"
 #include "utils.h"
 
 #endif /* OTTER_H */

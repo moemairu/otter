@@ -70,9 +70,10 @@ otter [OPTIONS] <directory>
 
 | Flag | Short | Description |
 |------|-------|-------------|
-| `--help` | `-h` | Show detailed help & feature list |
+| `--help` | `-h` | Show help & usage |
 | `--version` | `-v` | Print version |
 | `--dry-run` | `-n` | Preview changes without moving files |
+| `--undo` | `-u` | Undo the last organize operation |
 
 ### Examples
 
@@ -83,8 +84,8 @@ otter ~/Downloads
 # Preview what would happen (nothing gets moved)
 otter --dry-run ~/Documents
 
-# Organize the current directory
-otter .
+# Oops! Undo the last organize
+otter --undo ~/Downloads
 ```
 
 ---
@@ -101,6 +102,7 @@ otter .
 | 📄 **No-Extension Support** | Files without extensions → `NO_EXT/` |
 | 🔄 **Duplicate Safety** | `photo.jpg` → `photo_1.jpg`, `photo_2.jpg`, ... |
 | 👀 **Dry-Run Mode** | See what would happen without touching anything |
+| ↩️ **Undo Support** | Reverse the last organize with `--undo` |
 | 📊 **Summary Report** | Files scanned, moved, skipped, dirs created |
 
 ---
@@ -147,11 +149,13 @@ otter/
 │   ├── otter.h               # 🎯 Umbrella header (includes everything)
 │   ├── scanner.h             # 🔍 Directory scanning API
 │   ├── organizer.h           # 📦 File organization API
+│   ├── history.h             # ↩️ Undo / history API
 │   └── utils.h               # 🔧 Shared utility helpers
 └── src/
     ├── main.c                # 🚀 CLI entry point & arg parsing
     ├── scanner.c             # 📂 opendir/readdir/stat logic
     ├── organizer.c           # 🚚 mkdir + rename logic
+    ├── history.c             # ↩️ Move history & undo logic
     └── utils.c               # 🛠️  Extension extraction, path joining
 ```
 
@@ -172,10 +176,10 @@ otter/
 
 ## 🚀 Roadmap
 
+- [x] ~~Undo / rollback support~~ ✅
 - [ ] Recursive directory scanning (`--recursive`)
 - [ ] Watch mode with `inotify` (`--watch`)
 - [ ] Custom extension mapping config file
-- [ ] Undo / rollback support
 - [ ] Usage statistics & logging
 - [ ] Colorized terminal output
 
