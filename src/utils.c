@@ -73,6 +73,7 @@ void print_usage(const char *prog)
     printf("  OPTIONS\n");
     printf("      -n, --dry-run    Preview changes without moving files\n");
     printf("      -u, --undo       Undo the last organize operation\n");
+    printf("      -V, --verbose    Show detailed per-file output\n");
     printf("      -h, --help       Show this help message\n");
     printf("      -v, --version    Show version\n");
     printf("\n");
@@ -80,6 +81,7 @@ void print_usage(const char *prog)
     printf("      %s ~/Downloads            Organize files\n", prog);
     printf("      %s -n ~/Downloads         Dry-run (preview only)\n", prog);
     printf("      %s -u ~/Downloads         Undo last organize\n", prog);
+    printf("      %s -V ~/Downloads         Verbose output\n", prog);
     printf("\n");
 }
 

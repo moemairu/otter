@@ -33,9 +33,9 @@ typedef struct {
  * Returns OTTER_OK on success.
  */
 int organize_files(const char *dir_path, const FileList *list,
-                   int dry_run, OrganizerStats *stats);
+                   int dry_run, int verbose, OrganizerStats *stats);
 
 /* Print a human-readable summary to stdout. */
-void print_stats(const OrganizerStats *stats, int dry_run);
+void print_stats(const OrganizerStats *stats, int dry_run, int verbose);
 
 #endif /* ORGANIZER_H */

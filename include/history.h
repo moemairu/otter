@@ -48,6 +48,6 @@ void history_close(HistoryLog *log);
  *
  * Returns OTTER_OK on success.
  */
-int  history_undo(const char *dir_path);
+int  history_undo(const char *dir_path, int verbose);
 
 #endif /* HISTORY_H */

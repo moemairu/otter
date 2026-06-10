@@ -4,10 +4,11 @@
  * Usage:  otter [OPTIONS] <directory>
  *
  * Options:
- *   -n, --dry-run   Simulate without moving files.
- *   -u, --undo      Undo the last organize operation.
- *   -h, --help      Show usage information.
- *   -v, --version   Show version.
+ *   -n, --dry-run    Simulate without moving files.
+ *   -u, --undo       Undo the last organize operation.
+ *   -V, --verbose    Show detailed per-file output.
+ *   -h, --help       Show usage information.
+ *   -v, --version    Show version.
  */
 
 #include "otter.h"
@@ -17,6 +18,7 @@ int main(int argc, char *argv[])
     const char *dir_path = NULL;
     int         dry_run  = 0;
     int         undo     = 0;
+    int         verbose  = 0;
 
     /* ── Argument parsing ──────────────────────────────────── */
     for (int i = 1; i < argc; ++i) {
@@ -34,6 +36,10 @@ int main(int argc, char *argv[])
         }
         if (strcmp(argv[i], "-u") == 0 || strcmp(argv[i], "--undo") == 0) {
             undo = 1;
+            continue;
+        }
+        if (strcmp(argv[i], "-V") == 0 || strcmp(argv[i], "--verbose") == 0) {
+            verbose = 1;
             continue;
         }
         if (argv[i][0] == '-') {
@@ -59,17 +65,19 @@ int main(int argc, char *argv[])
 
     /* ── Undo mode ─────────────────────────────────────────── */
     if (undo) {
-        return history_undo(dir_path);
+        return history_undo(dir_path, verbose);
     }
 
-    /* ── Banner ────────────────────────────────────────────── */
-    printf("\n");
-    printf("  🦦  Otter v%s\n", OTTER_VERSION);
-    printf("  Organizing: %s\n", dir_path);
-    if (dry_run) {
-        printf("  Mode:       dry-run (no files will be moved)\n");
+    /* ── Banner (verbose only) ─────────────────────────────── */
+    if (verbose) {
+        printf("\n");
+        printf("  🦦  Otter v%s\n", OTTER_VERSION);
+        printf("  Organizing: %s\n", dir_path);
+        if (dry_run) {
+            printf("  Mode:       dry-run (no files will be moved)\n");
+        }
+        printf("\n");
     }
-    printf("\n");
 
     /* ── Scan ──────────────────────────────────────────────── */
     FileList list = {0};
@@ -79,17 +87,17 @@ int main(int argc, char *argv[])
     }
 
     if (list.count == 0) {
-        printf("  No files found in '%s'. Nothing to do.\n\n", dir_path);
+        printf("🦦 No files found. Nothing to do.\n");
         filelist_free(&list);
         return OTTER_OK;
     }
 
     /* ── Organize ──────────────────────────────────────────── */
     OrganizerStats stats = {0};
-    rc = organize_files(dir_path, &list, dry_run, &stats);
+    rc = organize_files(dir_path, &list, dry_run, verbose, &stats);
 
     /* ── Summary ───────────────────────────────────────────── */
-    print_stats(&stats, dry_run);
+    print_stats(&stats, dry_run, verbose);
 
     /* ── Cleanup ───────────────────────────────────────────── */
     filelist_free(&list);

@@ -86,7 +86,7 @@ static char *generate_unique_dest(const char *dest_dir,
 /* ── Public API ────────────────────────────────────────────── */
 
 int organize_files(const char *dir_path, const FileList *list,
-                   int dry_run, OrganizerStats *stats)
+                   int dry_run, int verbose, OrganizerStats *stats)
 {
     OrganizerStats local = {0};
     local.files_scanned = list->count;
@@ -141,7 +141,9 @@ int organize_files(const char *dir_path, const FileList *list,
 
         /* Move the file. */
         if (rename(src, dst) == 0) {
-            printf("  ✓  %s  →  %s/\n", fe->name, fe->extension);
+            if (verbose) {
+                printf("  ✓  %s  →  %s/\n", fe->name, fe->extension);
+            }
             local.files_moved++;
 
             /* Record in history for undo. */
@@ -168,20 +170,33 @@ int organize_files(const char *dir_path, const FileList *list,
     return (local.files_skipped > 0) ? OTTER_ERR_MOVE : OTTER_OK;
 }
 
-void print_stats(const OrganizerStats *stats, int dry_run)
+void print_stats(const OrganizerStats *stats, int dry_run, int verbose)
 {
-    printf("\n");
-    printf("  ──────────────────────────────────\n");
-    printf("  📊  Summary%s\n", dry_run ? " (dry-run)" : "");
-    printf("  ──────────────────────────────────\n");
-    printf("  Files scanned : %zu\n", stats->files_scanned);
-    printf("  Files moved   : %zu\n", stats->files_moved);
-    if (stats->files_skipped > 0) {
-        printf("  Files skipped : %zu\n", stats->files_skipped);
+    if (verbose) {
+        /* Detailed summary box. */
+        printf("\n");
+        printf("  ──────────────────────────────────\n");
+        printf("  📊  Summary%s\n", dry_run ? " (dry-run)" : "");
+        printf("  ──────────────────────────────────\n");
+        printf("  Files scanned : %zu\n", stats->files_scanned);
+        printf("  Files moved   : %zu\n", stats->files_moved);
+        if (stats->files_skipped > 0) {
+            printf("  Files skipped : %zu\n", stats->files_skipped);
+        }
+        if (!dry_run) {
+            printf("  Dirs created  : %zu\n", stats->dirs_created);
+        }
+        printf("  ──────────────────────────────────\n");
+        printf("\n");
+    } else {
+        /* Clean one-liner. */
+        printf("🦦 Scanned %zu file%s, created %zu folder%s, moved %zu file%s.\n",
+               stats->files_scanned, stats->files_scanned == 1 ? "" : "s",
+               stats->dirs_created,  stats->dirs_created  == 1 ? "" : "s",
+               stats->files_moved,   stats->files_moved   == 1 ? "" : "s");
+        if (stats->files_skipped > 0) {
+            printf("   ⚠  %zu file%s skipped.\n",
+                   stats->files_skipped, stats->files_skipped == 1 ? "" : "s");
+        }
     }
-    if (!dry_run) {
-        printf("  Dirs created  : %zu\n", stats->dirs_created);
-    }
-    printf("  ──────────────────────────────────\n");
-    printf("\n");
 }

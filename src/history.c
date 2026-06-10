@@ -97,7 +97,7 @@ static char *dirname_of(const char *path)
     return dir;
 }
 
-int history_undo(const char *dir_path)
+int history_undo(const char *dir_path, int verbose)
 {
     char *hist_path = path_join(dir_path, OTTER_HISTORY_FILE);
     if (!hist_path) return OTTER_ERR_STAT;
@@ -110,10 +110,12 @@ int history_undo(const char *dir_path)
         return OTTER_ERR_OPENDIR;
     }
 
-    printf("\n");
-    printf("  🦦  Otter — Undo\n");
-    printf("  Restoring: %s\n", dir_path);
-    printf("\n");
+    if (verbose) {
+        printf("\n");
+        printf("  🦦  Otter — Undo\n");
+        printf("  Restoring: %s\n", dir_path);
+        printf("\n");
+    }
 
     char line[PATH_MAX * 2 + 4];
     size_t restored = 0;
@@ -137,14 +139,11 @@ int history_undo(const char *dir_path)
 
         /* Move file back: current → original */
         if (rename(current, original) == 0) {
-            /* Extract just the filename from paths for display. */
-            const char *fname = strrchr(current, '/');
-            fname = fname ? fname + 1 : current;
-
-            const char *ext_dir = strrchr(original, '/');
-            (void)ext_dir; /* we show the reverse arrow */
-
-            printf("  ↩  %s  →  restored\n", fname);
+            if (verbose) {
+                const char *fname = strrchr(current, '/');
+                fname = fname ? fname + 1 : current;
+                printf("  ↩  %s  →  restored\n", fname);
+            }
             restored++;
 
             /* Try to remove the now-empty extension directory. */
@@ -168,16 +167,25 @@ int history_undo(const char *dir_path)
     }
 
     /* Summary */
-    printf("\n");
-    printf("  ──────────────────────────────────\n");
-    printf("  📊  Undo Summary\n");
-    printf("  ──────────────────────────────────\n");
-    printf("  Files restored : %zu\n", restored);
-    if (failed > 0) {
-        printf("  Files failed   : %zu\n", failed);
+    if (verbose) {
+        printf("\n");
+        printf("  ──────────────────────────────────\n");
+        printf("  📊  Undo Summary\n");
+        printf("  ──────────────────────────────────\n");
+        printf("  Files restored : %zu\n", restored);
+        if (failed > 0) {
+            printf("  Files failed   : %zu\n", failed);
+        }
+        printf("  ──────────────────────────────────\n");
+        printf("\n");
+    } else {
+        printf("🦦 Restored %zu file%s.\n",
+               restored, restored == 1 ? "" : "s");
+        if (failed > 0) {
+            printf("   ⚠  %zu file%s failed.\n",
+                   failed, failed == 1 ? "" : "s");
+        }
     }
-    printf("  ──────────────────────────────────\n");
-    printf("\n");
 
     free(hist_path);
     return (failed > 0) ? OTTER_ERR_MOVE : OTTER_OK;
