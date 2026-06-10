@@ -82,6 +82,7 @@ void print_usage(const char *prog)
     printf("      %s -n ~/Downloads         Dry-run (preview only)\n", prog);
     printf("      %s -u ~/Downloads         Undo last organize\n", prog);
     printf("      %s -V ~/Downloads         Verbose output\n", prog);
+    printf("      %s -u -V ~/Downloads      Verbose undo\n", prog);
     printf("\n");
 }
 

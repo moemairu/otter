@@ -74,6 +74,7 @@ otter [OPTIONS] <directory>
 | `--version` | `-v` | Print version |
 | `--dry-run` | `-n` | Preview changes without moving files |
 | `--undo` | `-u` | Undo the last organize operation |
+| `--verbose` | `-V` | Show detailed per-file output |
 
 ### Examples
 
@@ -86,6 +87,9 @@ otter --dry-run ~/Documents
 
 # Oops! Undo the last organize
 otter --undo ~/Downloads
+
+# Undo with detailed per-file output
+otter -u -V ~/Downloads
 ```
 
 ---
@@ -103,7 +107,8 @@ otter --undo ~/Downloads
 | 🔄 **Duplicate Safety** | `photo.jpg` → `photo_1.jpg`, `photo_2.jpg`, ... |
 | 👀 **Dry-Run Mode** | See what would happen without touching anything |
 | ↩️ **Undo Support** | Reverse the last organize with `--undo` |
-| 📊 **Summary Report** | Files scanned, moved, skipped, dirs created |
+| 📢 **Verbose Mode** | Detailed per-file logs and summary with `--verbose` |
+| 📊 **Summary Report** | Clean one-liner by default, full box in verbose mode |
 
 ---
 
