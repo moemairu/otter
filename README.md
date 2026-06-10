@@ -27,7 +27,7 @@ it really likes organizing things.
 
 ```bash
 # Clone & build
-git clone https://github.com/you/otter.git
+git clone https://github.com/moemairu/otter.git
 cd otter && make
 
 # Let the otter loose on your messy folder
