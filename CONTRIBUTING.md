@@ -40,10 +40,20 @@ By participating in this project, you are expected to uphold a welcoming and inc
 
 ### Prerequisites
 
-To build and run Otter, you will need:
-- A Linux environment (or compatible POSIX system).
-- A C compiler supporting **C17** (e.g., `gcc` or `clang`).
-- GNU `make`.
+To build and run Otter, you will need a C compiler supporting **C17** and GNU `make`. You can install these packages on common Linux distributions:
+
+- **Debian / Ubuntu / Pop!_OS:**
+  ```bash
+  sudo apt update && sudo apt install build-essential
+  ```
+- **Arch Linux / Manjaro / EndeavourOS:**
+  ```bash
+  sudo pacman -S base-devel
+  ```
+- **Fedora / RHEL:**
+  ```bash
+  sudo dnf groupinstall "Development Tools"
+  ```
 
 ### Build Instructions
 
