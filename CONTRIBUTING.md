@@ -164,6 +164,85 @@ otter/
     └── tomlc99/              # 📚 Vendored TOML parser
 ```
 
+### 🔌 Working with Strategies & Rules
+
+Otter's core architecture allows extending and adding organization strategies. If you want to modify or add strategies, here's what you need to know:
+
+#### 1. Command Line Integration
+Strategies are defined and parsed in [main.c](file:///home/mole/Documents/Projects/otter/src/main.c). The `--strategy` flag accepts a string that maps to the execution logic:
+- `extension` strategy calls `organize_files()` in [organizer.c](file:///home/mole/Documents/Projects/otter/src/organizer.c).
+- `context` strategy calls `organize_files_context()` in [organizer.c](file:///home/mole/Documents/Projects/otter/src/organizer.c).
+
+#### 2. Adding a New Strategy
+If you want to add a new strategy (e.g., `date-based` or `checksum-based` sorting):
+1. Register the strategy name in the argument parsing logic in [main.c](file:///home/mole/Documents/Projects/otter/src/main.c).
+2. Create your strategy implementation header in `include/` and source in `src/`.
+3. Implement a function in your source that processes the `FileList` (obtained from directory scanning) and performs directory creation and file moving.
+4. Hook your function up inside `main()` after evaluating the strategy string.
+
+#### 3. Rules & Config Parsing (`rules.toml`)
+The context-aware strategy relies on parsing `rules.toml` via `tomlc99` (a lightweight, compliant TOML parser vendored in `vendor/tomlc99`).
+- **Parsing Configuration**: Done in [config.c](file:///home/mole/Documents/Projects/otter/src/config.c). The parsing maps TOML entries to the `ContextConfig` struct (defined in [config.h](file:///home/mole/Documents/Projects/otter/include/config.h)).
+- **Classification Logic**: Defined in [classifier.c](file:///home/mole/Documents/Projects/otter/src/classifier.c). It rates files using a score calculated from content keywords, filename keywords, and file extension matches.
+
+If you are modifying configuration fields or changing how weights and settings work, make sure to update:
+1. `ContextConfig` struct in [config.h](file:///home/mole/Documents/Projects/otter/include/config.h).
+2. `config_load()` and `config_free()` in [config.c](file:///home/mole/Documents/Projects/otter/src/config.c).
+3. The evaluation logic in `classify_file()` in [classifier.c](file:///home/mole/Documents/Projects/otter/src/classifier.c).
+
+---
+
+## 🧪 Testing Guidelines
+
+Currently, Otter does not use a framework for automated unit testing. We rely on manual verification before commits. Here is how you should test your changes:
+
+### 1. Manual Verification Setup
+Create a messy test directory with dummy files containing various content, filenames, and extensions:
+```bash
+mkdir -p test_messy
+touch test_messy/homework_uts.pdf
+echo "This is an assignment for semester 2." > test_messy/tugas_kuliah.txt
+touch test_messy/invoice_june.pdf
+touch test_messy/vacation.png
+```
+
+### 2. Test Execution
+Verify both strategies:
+
+- **Test default extension strategy**:
+  ```bash
+  # Compile debug version
+  make debug
+
+  # Perform a dry-run and verify the output log looks correct
+  ./bin/otter -n test_messy
+
+  # Perform the move
+  ./bin/otter test_messy
+
+  # Verify the structure is correct (e.g., PDF/, TXT/, PNG/)
+  # Undo the organization and verify the files return to their original locations
+  ./bin/otter -u test_messy
+  ```
+
+- **Test context strategy (rules-based)**:
+  ```bash
+  # Dry-run with context strategy and custom rules
+  ./bin/otter -s context -r ./rules.toml -n test_messy
+
+  # Perform the organization
+  ./bin/otter -s context -r ./rules.toml -V test_messy
+
+  # Verify files are grouped into semantic categories (like Academic/, Finance/)
+  # Undo the context organization
+  ./bin/otter -u -V test_messy
+  ```
+
+Ensure there are no memory leaks or crashes when running these commands. You can verify memory allocation correctness under `valgrind` if available:
+```bash
+valgrind --leak-check=full ./bin/otter -s context -r ./rules.toml test_messy
+```
+
 ---
 
 <div align="center">

@@ -75,21 +75,23 @@ otter [OPTIONS] <directory>
 | `--dry-run` | `-n` | Preview changes without moving files |
 | `--undo` | `-u` | Undo the last organize operation |
 | `--verbose` | `-V` | Show detailed per-file output |
+| `--strategy <type>` | `-s` | Organization strategy: `extension` (default) or `context` |
+| `--rules <path>` | `-r` | Path to custom rules config (defaults to `./rules.toml` for context) |
 
 ### Examples
 
 ```bash
-# Organize Downloads
+# Organize Downloads using the default extension strategy
 otter ~/Downloads
 
-# Preview what would happen (nothing gets moved)
-otter --dry-run ~/Documents
+# Organize using the context-aware strategy with rules.toml
+otter --strategy context --rules ./rules.toml ~/Downloads
 
-# Oops! Undo the last organize
+# Preview what would happen (dry-run) with context strategy
+otter -s context -r ./rules.toml -n ~/Downloads
+
+# Oops! Undo the last organize operation
 otter --undo ~/Downloads
-
-# Undo with detailed per-file output
-otter -u -V ~/Downloads
 ```
 
 ---
@@ -160,6 +162,42 @@ sudo make uninstall     # Remove it
    │ the dir  │     │ per file │     │ ext type │     │ its dir  │     │ stats    │
    └──────────┘     └──────────┘     └──────────┘     └──────────┘     └──────────┘
 ```
+
+---
+
+## 💡 Organization Strategies & Rules
+
+Otter supports two main organization strategies:
+
+1. **`extension` (Default)**: A simple strategy that organizes files purely by their file extensions (e.g. `document.pdf` -> `PDF/`, `image.png` -> `PNG/`).
+2. **`context` (Rule-Based)**: A smarter strategy that reads file content, filenames, and extensions to classify them into conceptual folders (like `Academic`, `Research`, `Finance`) defined in `rules.toml`.
+
+### ⚙️ Context Classification via `rules.toml`
+
+When using `--strategy context`, Otter evaluates files based on keywords and scores defined in a TOML config file.
+
+#### Example Config (`rules.toml`)
+```toml
+[settings]
+confidence_threshold = 3        # Minimum score to classify a file
+weight_content       = 0.70     # Weight for content matches
+weight_filename      = 0.20     # Weight for filename matches
+weight_extension     = 0.10     # Weight for extension matches
+
+[Academic]
+keywords = ["assignment", "lecture", "semester", "uts", "uas", "tugas"]
+extensions = ["pdf", "docx"]
+
+[Academic.weights]
+uts = 5                         # Higher weight for specific keywords
+uas = 5
+```
+
+#### How Scoring Works:
+1. **Extension Match**: If a file's extension matches a category's list of extensions, the category receives a score.
+2. **Filename Match**: Otter scans the filename for keywords and aggregates their weights.
+3. **Content Match**: Otter scans the file's text content (first few KB) for keywords and aggregates their weights.
+4. **Final Evaluation**: The category with the highest weighted score above the `confidence_threshold` is chosen. If no category meets the threshold, the file is placed in `Unclassified/` or defaults back to its extension folder.
 
 ---
 
