@@ -35,6 +35,16 @@ typedef struct {
 int organize_files(const char *dir_path, const FileList *list,
                    int dry_run, int verbose, OrganizerStats *stats);
 
+/*
+ * organize_files_context — Classify and organize files by content.
+ *
+ * Uses the Classifier to determine a category for each file,
+ * then creates category folders and moves files into them.
+ */
+int organize_files_context(const char *dir_path, const FileList *list,
+                           const Classifier *cls, int dry_run,
+                           int verbose, OrganizerStats *stats);
+
 /* Print a human-readable summary to stdout. */
 void print_stats(const OrganizerStats *stats, int dry_run, int verbose);
 

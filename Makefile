@@ -4,14 +4,17 @@
 
 CC       := gcc
 CFLAGS   := -std=c17 -Wall -Wextra -Wpedantic -O2
-CPPFLAGS := -Iinclude -D_GNU_SOURCE
+CPPFLAGS := -Iinclude -Ivendor/tomlc99 -D_GNU_SOURCE
 
-SRC_DIR  := src
-OBJ_DIR  := build
-BIN_DIR  := bin
+SRC_DIR    := src
+OBJ_DIR    := build
+BIN_DIR    := bin
+VENDOR_DIR := vendor/tomlc99
 
-SRCS := $(wildcard $(SRC_DIR)/*.c)
-OBJS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
+# Project sources + vendored sources
+SRCS := $(wildcard $(SRC_DIR)/*.c) $(VENDOR_DIR)/toml.c
+OBJS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.c)) \
+        $(OBJ_DIR)/toml.o
 
 TARGET := $(BIN_DIR)/otter
 
@@ -24,6 +27,10 @@ $(TARGET): $(OBJS) | $(BIN_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+# Vendored toml.c — compile with relaxed warnings
+$(OBJ_DIR)/toml.o: $(VENDOR_DIR)/toml.c | $(OBJ_DIR)
+	$(CC) -std=c17 -O2 $(CPPFLAGS) -w -c -o $@ $<
 
 $(BIN_DIR) $(OBJ_DIR):
 	mkdir -p $@

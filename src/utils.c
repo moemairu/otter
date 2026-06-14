@@ -71,18 +71,24 @@ void print_usage(const char *prog)
     printf("      %s [OPTIONS] <directory>\n", prog);
     printf("\n");
     printf("  OPTIONS\n");
-    printf("      -n, --dry-run    Preview changes without moving files\n");
-    printf("      -u, --undo       Undo the last organize operation\n");
-    printf("      -V, --verbose    Show detailed per-file output\n");
-    printf("      -h, --help       Show this help message\n");
-    printf("      -v, --version    Show version\n");
+    printf("      -n, --dry-run              Preview changes without moving files\n");
+    printf("      -u, --undo                 Undo the last organize operation\n");
+    printf("      -V, --verbose              Show detailed per-file output\n");
+    printf("      -s, --strategy <type>      Strategy: extension (default), context\n");
+    printf("      -r, --rules <path>         Path to rules.toml for context strategy\n");
+    printf("      -h, --help                 Show this help message\n");
+    printf("      -v, --version              Show version\n");
+    printf("\n");
+    printf("  STRATEGIES\n");
+    printf("      extension    Organize by file extension (PDF/, JPG/, ...)\n");
+    printf("      context      Organize by content analysis (Academic/, Research/, ...)\n");
     printf("\n");
     printf("  EXAMPLES\n");
-    printf("      %s ~/Downloads            Organize files\n", prog);
-    printf("      %s -n ~/Downloads         Dry-run (preview only)\n", prog);
-    printf("      %s -u ~/Downloads         Undo last organize\n", prog);
-    printf("      %s -V ~/Downloads         Verbose output\n", prog);
-    printf("      %s -u -V ~/Downloads      Verbose undo\n", prog);
+    printf("      %s ~/Downloads                          Organize by extension\n", prog);
+    printf("      %s -s context ~/Downloads               Organize by content\n", prog);
+    printf("      %s -s context -r rules.toml ~/Downloads Use custom rules\n", prog);
+    printf("      %s -s context -n ~/Downloads            Context dry-run\n", prog);
+    printf("      %s -u ~/Downloads                       Undo last organize\n", prog);
     printf("\n");
 }
 

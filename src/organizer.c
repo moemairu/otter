@@ -200,3 +200,121 @@ void print_stats(const OrganizerStats *stats, int dry_run, int verbose)
         }
     }
 }
+
+/* ── Context-based organization ────────────────────────────── */
+
+int organize_files_context(const char *dir_path, const FileList *list,
+                           const Classifier *cls, int dry_run,
+                           int verbose, OrganizerStats *stats)
+{
+    OrganizerStats local = {0};
+    local.files_scanned = list->count;
+
+    /* Open history log (only when actually moving files). */
+    HistoryLog history = {0};
+    int has_history = 0;
+    if (!dry_run) {
+        has_history = (history_open(&history, dir_path) == 0);
+    }
+
+    for (size_t i = 0; i < list->count; ++i) {
+        const FileEntry *fe = &list->items[i];
+
+        /* Build the full path of the source file. */
+        char *src_path = path_join(dir_path, fe->name);
+        if (!src_path) {
+            local.files_skipped++;
+            continue;
+        }
+
+        /* Classify the file. */
+        ClassifyResult cr = {0};
+        if (classify_file(cls, src_path, fe->name, fe->extension, &cr) != 0
+            || !cr.category) {
+            if (verbose) {
+                fprintf(stderr, "  ✗  %s  →  classification failed\n", fe->name);
+            }
+            local.files_skipped++;
+            free(src_path);
+            classify_result_free(&cr);
+            continue;
+        }
+
+        /* Build destination directory path, e.g. ~/Downloads/Academic */
+        char *dest_dir = path_join(dir_path, cr.category);
+        if (!dest_dir) {
+            local.files_skipped++;
+            free(src_path);
+            classify_result_free(&cr);
+            continue;
+        }
+
+        if (dry_run) {
+            printf("  [dry-run]  %s  →  %s/%s", fe->name, cr.category, fe->name);
+            if (verbose) {
+                printf("  (score: %d)", cr.score);
+            }
+            printf("\n");
+            local.files_moved++;
+            free(src_path);
+            free(dest_dir);
+            classify_result_free(&cr);
+            continue;
+        }
+
+        /* Create the category subdirectory if needed. */
+        int was_created = 0;
+        if (ensure_dir(dest_dir, &was_created) != 0) {
+            local.files_skipped++;
+            free(src_path);
+            free(dest_dir);
+            classify_result_free(&cr);
+            continue;
+        }
+        if (was_created) {
+            local.dirs_created++;
+        }
+
+        /* Build destination full path with duplicate handling. */
+        char *dst = generate_unique_dest(dest_dir, fe->name);
+
+        if (!dst) {
+            local.files_skipped++;
+            free(src_path);
+            free(dest_dir);
+            classify_result_free(&cr);
+            continue;
+        }
+
+        /* Move the file. */
+        if (rename(src_path, dst) == 0) {
+            if (verbose) {
+                printf("  ✓  %s  →  %s/  (score: %d)\n",
+                       fe->name, cr.category, cr.score);
+            }
+            local.files_moved++;
+
+            /* Record in history for undo. */
+            if (has_history) {
+                history_record(&history, src_path, dst);
+            }
+        } else {
+            fprintf(stderr, "  ✗  %s  →  %s/ (failed: %s)\n",
+                    fe->name, cr.category, strerror(errno));
+            local.files_skipped++;
+        }
+
+        free(src_path);
+        free(dest_dir);
+        free(dst);
+        classify_result_free(&cr);
+    }
+
+    if (has_history) {
+        history_close(&history);
+    }
+
+    if (stats) *stats = local;
+
+    return (local.files_skipped > 0) ? OTTER_ERR_MOVE : OTTER_OK;
+}

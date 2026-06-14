@@ -1,0 +1,153 @@
+# ─────────────────────────────────────────────────────────────
+#  🦦 Otter — Context Classification Rules
+# ─────────────────────────────────────────────────────────────
+#
+#  This file defines categories, keywords, and scoring settings
+#  for the `--strategy context` mode.
+#
+#  Usage:
+#    otter --strategy context --rules ./rules.toml ~/Downloads
+#
+#  You can add your own categories or override the built-in ones.
+# ─────────────────────────────────────────────────────────────
+
+[settings]
+confidence_threshold = 3        # minimum score to classify a file
+weight_content       = 0.70     # weight for content-based matches
+weight_filename      = 0.20     # weight for filename-based matches
+weight_extension     = 0.10     # weight for extension-based matches
+
+
+# ── Academic ──────────────────────────────────────────────────
+
+[Academic]
+keywords = [
+    "assignment", "lecture", "semester", "uts", "uas",
+    "praktikum", "modul", "tugas", "kuliah", "mata kuliah",
+    "silabus", "rps", "materi", "pertemuan", "kuis",
+    "ujian", "skripsi", "thesis", "dosen", "mahasiswa"
+]
+
+[Academic.weights]
+uts        = 5
+uas        = 5
+praktikum  = 3
+skripsi    = 5
+thesis     = 5
+
+
+# ── Cybersecurity ─────────────────────────────────────────────
+
+[Cybersecurity]
+keywords = [
+    "owasp", "pentest", "vulnerability", "exploit", "security",
+    "intrusion", "malware", "firewall", "encryption", "ctf",
+    "penetration testing", "sql injection", "cross site scripting",
+    "xss", "brute force", "reverse engineering", "forensic"
+]
+
+[Cybersecurity.weights]
+owasp    = 5
+pentest  = 5
+exploit  = 3
+security = 2
+
+
+# ── Research ──────────────────────────────────────────────────
+
+[Research]
+keywords = [
+    "abstract", "methodology", "results", "conclusion",
+    "journal", "paper", "literature review", "hypothesis",
+    "survey", "dataset", "experiment", "analysis",
+    "citation", "references", "findings", "peer review"
+]
+
+[Research.weights]
+abstract     = 3
+methodology  = 3
+journal      = 3
+hypothesis   = 3
+
+
+# ── Finance ───────────────────────────────────────────────────
+
+[Finance]
+keywords = [
+    "invoice", "payment", "tax", "receipt", "balance",
+    "budget", "financial", "accounting", "revenue", "expense",
+    "transaction", "bank", "salary", "billing", "profit"
+]
+
+[Finance.weights]
+invoice = 5
+tax     = 3
+receipt = 3
+
+
+# ── Programming ───────────────────────────────────────────────
+
+[Programming]
+keywords = [
+    "algorithm", "database", "api", "framework", "compiler",
+    "debugging", "source code", "repository", "git", "docker",
+    "function", "variable", "class", "object", "inheritance",
+    "polymorphism", "syntax", "runtime"
+]
+
+
+# ── Design ────────────────────────────────────────────────────
+
+[Design]
+keywords = [
+    "wireframe", "mockup", "prototype", "ui", "ux",
+    "figma", "typography", "layout", "branding", "color palette",
+    "graphic", "illustration", "photoshop", "canva", "design system"
+]
+
+
+# ── Images (extension-only) ──────────────────────────────────
+
+[Images]
+extensions = [
+    "jpg", "jpeg", "png", "gif", "bmp",
+    "svg", "webp", "ico", "tiff", "raw"
+]
+
+
+# ── Videos (extension-only) ──────────────────────────────────
+
+[Videos]
+extensions = [
+    "mp4", "mkv", "avi", "mov", "webm",
+    "flv", "wmv", "m4v"
+]
+
+
+# ── Archives (extension-only) ────────────────────────────────
+
+[Archives]
+extensions = [
+    "zip", "rar", "7z", "tar", "gz",
+    "bz2", "xz", "iso"
+]
+
+
+# ── Music (extension-only) ───────────────────────────────────
+
+[Music]
+extensions = [
+    "mp3", "wav", "flac", "ogg", "aac",
+    "wma", "m4a", "opus"
+]
+
+
+# ─────────────────────────────────────────────────────────────
+#  💡 To add your own category, just add a new section:
+#
+#  [Projects]
+#  keywords = ["shieldpdp", "trustfirst", "frozen feels", "easygo"]
+#
+#  [Projects.weights]
+#  shieldpdp = 5
+# ─────────────────────────────────────────────────────────────
