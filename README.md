@@ -109,6 +109,7 @@ otter -u -V ~/Downloads
 | ↩️ **Undo Support** | Reverse the last organize with `--undo` |
 | 📢 **Verbose Mode** | Detailed per-file logs and summary with `--verbose` |
 | 📊 **Summary Report** | Clean one-liner by default, full box in verbose mode |
+| ⚙️ **Custom Rules** | Map specific extensions via `rules.toml` |
 
 ---
 
@@ -149,19 +150,29 @@ sudo make uninstall     # Remove it
 otter/
 ├── Makefile                  # Build automation
 ├── README.md                 # You are here! 👋
+├── CONTRIBUTING.md           # Contribution guidelines 🤝
+├── rules.toml                # Custom extension mapping config
 ├── .gitignore
 ├── include/
 │   ├── otter.h               # 🎯 Umbrella header (includes everything)
+│   ├── config.h              # ⚙️ TOML configuration parsing
+│   ├── classifier.h          # 🗂️ Extension-to-folder mapping logic
+│   ├── extractor.h           # ✂️ File extension extraction
 │   ├── scanner.h             # 🔍 Directory scanning API
 │   ├── organizer.h           # 📦 File organization API
 │   ├── history.h             # ↩️ Undo / history API
 │   └── utils.h               # 🔧 Shared utility helpers
-└── src/
-    ├── main.c                # 🚀 CLI entry point & arg parsing
-    ├── scanner.c             # 📂 opendir/readdir/stat logic
-    ├── organizer.c           # 🚚 mkdir + rename logic
-    ├── history.c             # ↩️ Move history & undo logic
-    └── utils.c               # 🛠️  Extension extraction, path joining
+├── src/
+│   ├── main.c                # 🚀 CLI entry point & arg parsing
+│   ├── config.c              # ⚙️ rules.toml parser
+│   ├── classifier.c          # 🗂️ Classification logic
+│   ├── extractor.c           # ✂️ Extractor logic
+│   ├── scanner.c             # 📂 opendir/readdir/stat logic
+│   ├── organizer.c           # 🚚 mkdir + rename logic
+│   ├── history.c             # ↩️ Move history & undo logic
+│   └── utils.c               # 🛠️ Path manipulation helpers
+└── vendor/
+    └── tomlc99/              # 📚 Vendored TOML parser
 ```
 
 ---
@@ -175,16 +186,16 @@ otter/
 | **APIs** | POSIX — `opendir`, `readdir`, `stat`, `rename`, `mkdir` |
 | **Build** | GNU Make |
 | **Compiler Flags** | `-std=c17 -Wall -Wextra -Wpedantic` |
-| **Dependencies** | None (just libc + POSIX) |
+| **Dependencies** | tomlc99 (vendored) |
 
 ---
 
 ## 🚀 Roadmap
 
 - [x] ~~Undo / rollback support~~ ✅
+- [x] ~~Custom extension mapping config file~~ ✅
 - [ ] Recursive directory scanning (`--recursive`)
 - [ ] Watch mode with `inotify` (`--watch`)
-- [ ] Custom extension mapping config file
 - [ ] Usage statistics & logging
 - [ ] Colorized terminal output
 

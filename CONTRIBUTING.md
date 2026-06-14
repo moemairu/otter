@@ -130,19 +130,28 @@ otter/
 ├── Makefile                  # Build automation
 ├── README.md                 # Project README
 ├── CONTRIBUTING.md           # This file! 🤝
+├── rules.toml                # Custom extension mapping config
 ├── .gitignore
 ├── include/
 │   ├── otter.h               # 🎯 Umbrella header (includes everything)
+│   ├── config.h              # ⚙️ TOML configuration parsing
+│   ├── classifier.h          # 🗂️ Extension-to-folder mapping logic
+│   ├── extractor.h           # ✂️ File extension extraction
 │   ├── scanner.h             # 🔍 Directory scanning API
 │   ├── organizer.h           # 📦 File organization API
 │   ├── history.h             # ↩️ Undo / history API
 │   └── utils.h               # 🔧 Shared utility helpers
-└── src/
-    ├── main.c                # 🚀 CLI entry point & arg parsing
-    ├── scanner.c             # 📂 opendir/readdir/stat logic
-    ├── organizer.c           # 🚚 mkdir + rename logic
-    ├── history.c             # ↩️ Move history & undo logic
-    └── utils.c               # 🛠️  Extension extraction, path joining
+├── src/
+│   ├── main.c                # 🚀 CLI entry point & arg parsing
+│   ├── config.c              # ⚙️ rules.toml parser
+│   ├── classifier.c          # 🗂️ Classification logic
+│   ├── extractor.c           # ✂️ Extractor logic
+│   ├── scanner.c             # 📂 opendir/readdir/stat logic
+│   ├── organizer.c           # 🚚 mkdir + rename logic
+│   ├── history.c             # ↩️ Move history & undo logic
+│   └── utils.c               # 🛠️ Path manipulation helpers
+└── vendor/
+    └── tomlc99/              # 📚 Vendored TOML parser
 ```
 
 ---
