@@ -115,6 +115,16 @@ otter -u -V ~/Downloads
 
 ## 🔨 Build
 
+### Prerequisites
+
+You need a C compiler supporting C17 (like GCC or Clang) and GNU Make. On Debian/Ubuntu-based systems, you can install them via:
+
+```bash
+sudo apt update && sudo apt install build-essential
+```
+
+### Compiling Otter
+
 ```bash
 make              # Release build (C17, -O2, all warnings)
 make debug        # Debug build (-g, no optimization)
