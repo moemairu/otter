@@ -251,7 +251,7 @@ otter/
 
 - [x] ~~Undo / rollback support~~ ✅
 - [x] ~~Custom extension mapping config file~~ ✅
-- [ ] Recursive directory scanning (`--recursive`)
+- [x] ~~Recursive directory scanning (`--recursive`)~~ ✅
 - [ ] Watch mode with `inotify` (`--watch`)
 - [ ] Usage statistics & logging
 - [ ] Colorized terminal output
