@@ -110,7 +110,7 @@ int organize_files(const char *dir_path, const FileList *list,
 
         if (dry_run) {
             printf("  [dry-run]  %s  →  %s/%s\n",
-                   fe->name, fe->extension, fe->name);
+                   fe->rel_path, fe->extension, fe->name);
             local.files_moved++;
             free(dest_dir);
             continue;
@@ -128,7 +128,7 @@ int organize_files(const char *dir_path, const FileList *list,
         }
 
         /* Build source and destination full paths. */
-        char *src = path_join(dir_path, fe->name);
+        char *src = path_join(dir_path, fe->rel_path);
         char *dst = generate_unique_dest(dest_dir, fe->name);
 
         if (!src || !dst) {
@@ -142,7 +142,7 @@ int organize_files(const char *dir_path, const FileList *list,
         /* Move the file. */
         if (rename(src, dst) == 0) {
             if (verbose) {
-                printf("  ✓  %s  →  %s/\n", fe->name, fe->extension);
+                printf("  ✓  %s  →  %s/\n", fe->rel_path, fe->extension);
             }
             local.files_moved++;
 
@@ -152,7 +152,7 @@ int organize_files(const char *dir_path, const FileList *list,
             }
         } else {
             fprintf(stderr, "  ✗  %s  →  %s/ (failed: %s)\n",
-                    fe->name, fe->extension, strerror(errno));
+                    fe->rel_path, fe->extension, strerror(errno));
             local.files_skipped++;
         }
 
@@ -221,7 +221,7 @@ int organize_files_context(const char *dir_path, const FileList *list,
         const FileEntry *fe = &list->items[i];
 
         /* Build the full path of the source file. */
-        char *src_path = path_join(dir_path, fe->name);
+        char *src_path = path_join(dir_path, fe->rel_path);
         if (!src_path) {
             local.files_skipped++;
             continue;
@@ -232,7 +232,7 @@ int organize_files_context(const char *dir_path, const FileList *list,
         if (classify_file(cls, src_path, fe->name, fe->extension, &cr) != 0
             || !cr.category) {
             if (verbose) {
-                fprintf(stderr, "  ✗  %s  →  classification failed\n", fe->name);
+                fprintf(stderr, "  ✗  %s  →  classification failed\n", fe->rel_path);
             }
             local.files_skipped++;
             free(src_path);
@@ -250,7 +250,7 @@ int organize_files_context(const char *dir_path, const FileList *list,
         }
 
         if (dry_run) {
-            printf("  [dry-run]  %s  →  %s/%s", fe->name, cr.category, fe->name);
+            printf("  [dry-run]  %s  →  %s/%s", fe->rel_path, cr.category, fe->name);
             if (verbose) {
                 printf("  (score: %d)", cr.score);
             }
@@ -290,7 +290,7 @@ int organize_files_context(const char *dir_path, const FileList *list,
         if (rename(src_path, dst) == 0) {
             if (verbose) {
                 printf("  ✓  %s  →  %s/  (score: %d)\n",
-                       fe->name, cr.category, cr.score);
+                       fe->rel_path, cr.category, cr.score);
             }
             local.files_moved++;
 
@@ -300,7 +300,7 @@ int organize_files_context(const char *dir_path, const FileList *list,
             }
         } else {
             fprintf(stderr, "  ✗  %s  →  %s/ (failed: %s)\n",
-                    fe->name, cr.category, strerror(errno));
+                    fe->rel_path, cr.category, strerror(errno));
             local.files_skipped++;
         }
 
