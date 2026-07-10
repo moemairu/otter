@@ -9,6 +9,7 @@
  *   -V, --verbose           Show detailed per-file output.
  *   -s, --strategy <type>   Organization strategy: extension (default), context.
  *   -r, --rules <path>      Path to custom rules.toml for context strategy.
+ *   -R, --recursive         Scan directories recursively.
  *   -h, --help              Show usage information.
  *   -v, --version           Show version.
  */
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
     int         dry_run  = 0;
     int         undo     = 0;
     int         verbose  = 0;
+    int         recursive = 0;
 
     /* ── Argument parsing ──────────────────────────────────── */
     for (int i = 1; i < argc; ++i) {
@@ -69,6 +71,10 @@ int main(int argc, char *argv[])
             rules = argv[++i];
             continue;
         }
+        if (strcmp(argv[i], "-R") == 0 || strcmp(argv[i], "--recursive") == 0) {
+            recursive = 1;
+            continue;
+        }
         if (argv[i][0] == '-') {
             fprintf(stderr, "otter: unknown option '%s'\n", argv[i]);
             print_usage(argv[0]);
@@ -104,12 +110,15 @@ int main(int argc, char *argv[])
         if (dry_run) {
             printf("  Mode:       dry-run (no files will be moved)\n");
         }
+        if (recursive) {
+            printf("  Scope:      recursive\n");
+        }
         printf("\n");
     }
 
     /* ── Scan ──────────────────────────────────────────────── */
     FileList list = {0};
-    int rc = scan_directory(dir_path, &list);
+    int rc = scan_directory(dir_path, &list, recursive);
     if (rc != OTTER_OK) {
         return rc;
     }
