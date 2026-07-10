@@ -76,6 +76,7 @@ void print_usage(const char *prog)
     printf("      -V, --verbose              Show detailed per-file output\n");
     printf("      -s, --strategy <type>      Strategy: extension (default), context\n");
     printf("      -r, --rules <path>         Path to rules.toml for context strategy\n");
+    printf("      -R, --recursive            Scan directories recursively\n");
     printf("      -h, --help                 Show this help message\n");
     printf("      -v, --version              Show version\n");
     printf("\n");
